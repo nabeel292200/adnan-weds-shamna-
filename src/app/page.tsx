@@ -14,22 +14,25 @@ export default function WeddingPage() {
   const [pageVisible, setPageVisible] = useState(false);
   const musicRef = useRef<MusicToggleHandle>(null);
 
-  const handleOpenInvitation = () => {
-    // Start music playback
+  const handleStartOpen = () => {
+    // Start music on user click gesture
     if (musicRef.current) {
       musicRef.current.play();
     }
+  };
 
-    // Reveal main page
-    setTimeout(() => {
-      setPageVisible(true);
-    }, 1800);
+  const handleEnvelopeOpened = () => {
+    // Envelope animation finished — smoothly reveal main page
+    setPageVisible(true);
   };
 
   return (
     <>
       {/* First screen: Opening Envelope Gate */}
-      <Gate onOpen={handleOpenInvitation} />
+      <Gate
+        onStartOpen={handleStartOpen}
+        onEnvelopeOpened={handleEnvelopeOpened}
+      />
 
       {/* Main Wedding Invitation Document */}
       <main id="page" className={pageVisible ? "visible" : ""}>

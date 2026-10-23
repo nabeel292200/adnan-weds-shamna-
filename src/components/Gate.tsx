@@ -1,43 +1,111 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 interface GateProps {
-  onOpen: () => void;
+  onStartOpen?: () => void;
+  onEnvelopeOpened: () => void;
 }
 
-export default function Gate({ onOpen }: GateProps) {
+export default function Gate({ onStartOpen, onEnvelopeOpened }: GateProps) {
   const [btnHidden, setBtnHidden] = useState(false);
   const [posterHide, setPosterHide] = useState(false);
   const [gateFading, setGateFading] = useState(false);
   const [gateGone, setGateGone] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hasTriggeredRef = useRef(false);
+  const isOpeningRef = useRef(false);
 
-  const handleOpen = () => {
+  const finishOpening = () => {
+    if (hasTriggeredRef.current) return;
+    hasTriggeredRef.current = true;
+
+    // Trigger fading dissolve on gate
+    setGateFading(true);
+    // Reveal main page underneath
+    onEnvelopeOpened();
+    // Allow page scrolling
+    document.body.classList.remove("locked");
+
+    // Remove gate from DOM after fade transition completes (1350ms)
+    setTimeout(() => {
+      setGateGone(true);
+    }, 1350);
+  };
+
+  const handleOpenClick = () => {
+    // Prevent multiple clicks from triggering overlapping animations
+    if (isOpeningRef.current) return;
+    isOpeningRef.current = true;
+
     setBtnHidden(true);
-    setPosterHide(true);
 
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
+    // Call start callback (e.g. to start background music playback on user gesture)
+    if (onStartOpen) {
+      onStartOpen();
     }
 
-    onOpen();
+    // Respect reduced-motion accessibility preferences
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      finishOpening();
+      return;
+    }
 
-    setTimeout(() => {
-      setGateFading(true);
-      document.body.classList.remove("locked");
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = 0;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Video started playing successfully
+          })
+          .catch(() => {
+            // If browser blocks video playback, transition gracefully
+            finishOpening();
+          });
+      }
+
+      // Safety fallback: if video ended event does not fire within 3.5s
       setTimeout(() => {
-        setGateGone(true);
-      }, 1300);
-    }, 1800);
+        if (!hasTriggeredRef.current) {
+          finishOpening();
+        }
+      }, 3500);
+    } else {
+      finishOpening();
+    }
   };
+
+  const handleVideoPlaying = () => {
+    setPosterHide(true);
+  };
+
+  const handleVideoPause = () => {
+    if (!hasTriggeredRef.current) {
+      setPosterHide(false);
+    }
+  };
+
+  const handleVideoEnded = () => {
+    // Envelope opening animation is complete; now transition to the hero page
+    finishOpening();
+  };
+
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove("locked");
+    };
+  }, []);
 
   if (gateGone) return null;
 
   return (
-    <div id="gate" className={`${gateFading ? "fading" : ""}`}>
+    <div id="gate" className={gateFading ? "fading" : ""}>
       <img
         id="envelope-poster"
         className={`gate-poster ${posterHide ? "hide" : ""}`}
@@ -52,12 +120,15 @@ export default function Gate({ onOpen }: GateProps) {
         muted
         playsInline
         preload="auto"
+        onPlaying={handleVideoPlaying}
+        onPause={handleVideoPause}
+        onEnded={handleVideoEnded}
       />
       <div className="gate-veil" />
       <button
         id="open-btn"
         className={btnHidden ? "hidden" : ""}
-        onClick={handleOpen}
+        onClick={handleOpenClick}
         aria-label="Open invitation"
       >
         Open Invitation

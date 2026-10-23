@@ -27,9 +27,20 @@ export default function ClosingSection() {
           }}
         >
           <span>Crafted by</span>
-          <span style={{ fontWeight: 700, color: "var(--copper-deep)", letterSpacing: "0.28em" }}>
+          <a
+            href="https://www.instagram.com/zetron.tech/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontWeight: 700,
+              color: "var(--copper-deep)",
+              letterSpacing: "0.28em",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+          >
             Zetron
-          </span>
+          </a>
         </div>
       </div>
     </section>

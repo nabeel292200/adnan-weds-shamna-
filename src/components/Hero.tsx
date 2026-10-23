@@ -13,7 +13,6 @@ export default function Hero() {
           SHAMNA
         </h1>
         <div className="hero-tagline reveal">Forever begins here</div>
-        <div className="hero-date reveal">30 &bull; 31 . 10 . 2026</div>
       </div>
       <div className="scroll-cue reveal">
         <span>↓</span>SCROLL TO DISCOVER
