@@ -18,7 +18,7 @@ export default function EventJourneySection() {
               <div className="jplace">
                 Town Juma Masjid
                 <br />
-                Vadakke Mampuram, Chemmad, Malappuram
+                Vadakke Mampuram
               </div>
               <div
                 className="jqr-box"
@@ -41,7 +41,7 @@ export default function EventJourneySection() {
               </div>
               <a
                 className="btn jbtn"
-                href="https://www.google.com/maps/search/?api=1&query=Vadakke+Mamburam+Town+Juma+Masjid+Pathinarungal+Chemmad"
+                href="https://www.google.com/maps/place/Uvm+house/@11.0435992,75.883659,20.33z/data=!4m12!1m5!3m4!2zMTHCsDAyJzM3LjIiTiA3NcKwNTMnMDIuNCJF!8m2!3d11.0436764!4d75.8839951!3m5!1s0x3ba653002252aaad:0xd0d4e172b3cc641e!8m2!3d11.0436072!4d75.8840149!16s%2Fg%2F11yzztng4v?hl=en&entry=ttu&g_ep=EgoyMDI2MTAxOS4wIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
               >
